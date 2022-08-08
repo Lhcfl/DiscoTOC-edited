@@ -47,7 +47,7 @@ export default {
 
             headings.forEach((h, index) => {
               // suffix uses index for non-Latin languages
-              const suffix = /*slugify(h.textContent) ||*/ index + "-salt-" + Math.round(Math.random() * 114514);
+              const suffix = /*slugify(h.textContent) ||*/ index + "-salt-" + Math.round(Math.random() * 1145141919);
               const id =
                 h.getAttribute("id") || slugify(`toc-${h.nodeName}-${suffix}`);
 
