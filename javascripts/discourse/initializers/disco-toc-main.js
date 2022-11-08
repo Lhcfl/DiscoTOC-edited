@@ -41,7 +41,7 @@ export default {
               ":scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > h5";
             const headings = el.querySelectorAll(dTocHeadingSelectors);
 
-            if (headings.length < 1) {
+            if (headings.length < settings.TOC_min_heading) {
               return;
             }
 
@@ -154,10 +154,10 @@ export default {
     const dToc = document.createElement("div");
     dToc.classList.add("d-toc-main");
     dToc.innerHTML = `<div class="d-toc-icons">
-              <a href="" class="scroll-to-bottom" title="${I18n.t(
+              <a href="#" class="scroll-to-bottom" title="${I18n.t(
                 themePrefix("post_bottom_tooltip")
               )}">${iconHTML("downward")}</a>
-              <a href="" class="d-toc-close">${iconHTML("times")}</a></div>`;
+              <a href="#" class="d-toc-close">${iconHTML("times")}</a></div>`;
 
     const existing = document.querySelector(".d-toc-wrapper .d-toc-main");
     if (existing) {
@@ -286,9 +286,9 @@ export default {
     li.classList.add("d-toc-item");
     li.classList.add(`d-toc-${clonedNode.tagName.toLowerCase()}`);
 
-    li.innerHTML = `<a data-d-toc="${clonedNode.getAttribute("id")}">${
-      clonedNode.textContent
-    }</a>`;
+    const id = clonedNode.getAttribute("id");
+    li.innerHTML = `<a href="#" data-d-toc="${id}"></a>`;
+    li.querySelector("a").innerText = clonedNode.textContent.trim();
 
     clonedNode.remove();
     return li;
