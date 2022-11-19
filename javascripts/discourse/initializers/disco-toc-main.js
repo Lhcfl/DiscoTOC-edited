@@ -17,13 +17,16 @@ export default {
 
       const autoTocTags = settings.auto_TOC_tags.split("|");
 
+      let headings_of_id = {};
+      let now_post_number = 1;
+
       api.decorateCookedElement(
         (el, helper) => {
           if (helper) {
             const post = helper.getModel();
-            if (post?.post_number !== 1) {
-              return;
-            }
+            // if (post?.post_number !== 1) {
+            //   return;
+            // }
 
             const topicCategory = helper.getModel().topic.category_id;
             const topicTags = helper.getModel().topic.tags;
@@ -41,6 +44,8 @@ export default {
               ":scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > h5";
             const headings = el.querySelectorAll(dTocHeadingSelectors);
 
+            headings_of_id[post.post_number] = headings;
+            
             if (headings.length < 1) {
               return;
             }
@@ -58,18 +63,21 @@ export default {
 
             el.classList.add("d-toc-cooked");
 
-            if (document.querySelector(".d-toc-wrapper")) {
-              this.insertTOC(headings);
-            } else {
-              // try again if decoration happens while outlet is not rendered
-              // this is due to core resetting `canRender` for topic-navigation
-              // when transitioning between topics
-              later(() => {
-                if (document.querySelector(".d-toc-wrapper")) {
-                  this.insertTOC(headings);
-                }
-              }, 300);
+            if (post?.post_number === now_post_number) {
+              if (document.querySelector(".d-toc-wrapper")) {
+                this.insertTOC(headings);
+              } else {
+                // try again if decoration happens while outlet is not rendered
+                // this is due to core resetting `canRender` for topic-navigation
+                // when transitioning between topics
+                later(() => {
+                  if (document.querySelector(".d-toc-wrapper")) {
+                    this.insertTOC(headings);
+                  }
+                }, 300);
+              }
             }
+
           }
         },
         {
@@ -83,23 +91,33 @@ export default {
         if (!document.querySelector(".d-toc-cooked")) {
           return;
         }
-        if (args.post.post_number === 1) {
+
+        now_post_number = args.post.post_number;
+        
+        
+        if (args.post.cooked.indexOf('<div data-theme-toc="true">') !== -1 && headings_of_id[now_post_number] != undefined) {
+          document.body.classList.remove("d-toc-timeline-visible");
           document.body.classList.add("d-toc-timeline-visible");
+          setTimeout(() => {
+            this.insertTOC(headings_of_id[now_post_number]);
+          }, 500)
         } else {
           document.body.classList.remove("d-toc-timeline-visible");
         }
       });
 
       api.onAppEvent("docs-topic:current-post-scrolled", () => {
-        this.updateTOCSidebar();
+        if (headings_of_id[now_post_number] != undefined)
+         this.updateTOCSidebar(headings_of_id[now_post_number]);
       });
 
       api.onAppEvent("topic:current-post-scrolled", (args) => {
-        if (args.postIndex !== 1) {
-          return;
-        }
-
-        this.updateTOCSidebar();
+        // if (args.postIndex !== 1) {
+        //   return;
+        // }
+        now_post_number = args.postIndex;
+        if (headings_of_id[now_post_number] != undefined)
+          this.updateTOCSidebar(headings_of_id[now_post_number]);
       });
 
       api.cleanupStream(() => {
@@ -109,12 +127,12 @@ export default {
     });
   },
 
-  updateTOCSidebar() {
+  updateTOCSidebar(headings) {
+    if (headings == undefined) {return;}
     if (!document.querySelector(".d-toc-cooked")) {
       return;
     }
 
-    const headings = document.querySelectorAll(".d-toc-post-heading");
     let closestHeadingDistance = null;
     let closestHeading = null;
 
@@ -151,6 +169,7 @@ export default {
   },
 
   insertTOC(headings) {
+    if (headings == undefined) return;
     const dToc = document.createElement("div");
     dToc.classList.add("d-toc-main");
     dToc.innerHTML = `<div class="d-toc-icons">
@@ -237,6 +256,11 @@ export default {
   },
 
   buildTOC(headings) {
+    if (headings == undefined) return;
+    const old_d = document.getElementById("d-toc");
+    if (old_d != null) {
+      old_d.parentNode.removeChild(old_d);
+    }
     const result = document.createElement("div");
     result.setAttribute("id", "d-toc");
 
