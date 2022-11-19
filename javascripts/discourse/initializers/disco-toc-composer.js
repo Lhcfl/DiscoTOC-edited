@@ -33,12 +33,11 @@ export default {
           },
         });
 
-        api.addToolbarPopupMenuOptionsCallback((controller) => {
+        api.addToolbarPopupMenuOptionsCallback(() => {
           return {
             action: "insertDtoc",
             icon: "align-left",
             label: themePrefix("insert_table_of_contents"),
-            condition: controller.get("model.topicFirstPost"),
           };
         });
       }
