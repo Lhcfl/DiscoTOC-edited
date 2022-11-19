@@ -35,7 +35,7 @@ export default {
             const tocCategory = autoTocCategoryIds?.includes(topicCategory);
             const tocTag = topicTags?.some((tag) => autoTocTags?.includes(tag));
 
-            if (!hasTOCmarkup && !tocCategory && !tocTag) {
+            if (!hasTOCmarkup && !tocCategory && !tocTag && post?.post_number == window.now_post_number) {
               document.body.classList.remove("d-toc-timeline-visible");
               return;
             }
@@ -66,20 +66,20 @@ export default {
             downward.setAttribute("id", `downward-post-${post?.post_number}`);
             el.appendChild(downward);
 
-            if (post?.post_number === window.now_post_number) {
-              if (document.querySelector(".d-toc-wrapper")) {
-                this.insertTOC(headings);
-              } else {
-                // try again if decoration happens while outlet is not rendered
-                // this is due to core resetting `canRender` for topic-navigation
-                // when transitioning between topics
-                later(() => {
-                  if (document.querySelector(".d-toc-wrapper")) {
-                    this.insertTOC(headings);
-                  }
-                }, 300);
-              }
-            }
+            // if (post?.post_number === window.now_post_number) {
+            //   if (document.querySelector(".d-toc-wrapper")) {
+            //     this.insertTOC(headings);
+            //   } else {
+            //     // try again if decoration happens while outlet is not rendered
+            //     // this is due to core resetting `canRender` for topic-navigation
+            //     // when transitioning between topics
+            //     later(() => {
+            //       if (document.querySelector(".d-toc-wrapper")) {
+            //         this.insertTOC(headings);
+            //       }
+            //     }, 300);
+            //   }
+            // }
           }
         },
         {
