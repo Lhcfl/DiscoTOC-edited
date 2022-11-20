@@ -19,7 +19,7 @@ export default {
 
       let headings_of_id = {};
       window.now_post_number = 1;
-
+api.decorate
       api.decorateCookedElement(
         (el, helper) => {
           if (helper) {
@@ -29,9 +29,13 @@ export default {
             // }
             
             if (helper.getModel() == undefined) return;
+            if (helper.getModel().topic == undefined) return;
             
+            try{
+
             const topicCategory = helper.getModel().topic.category_id;
             const topicTags = helper.getModel().topic.tags;
+            
 
             const hasTOCmarkup = el?.querySelector(`[data-theme-toc="true"]`);
             const tocCategory = autoTocCategoryIds?.includes(topicCategory);
@@ -67,6 +71,11 @@ export default {
             const downward = document.createElement("div");
             downward.setAttribute("id", `downward-post-${post?.post_number}`);
             el.appendChild(downward);
+            } catch (err) {
+              console.log(err);
+              // use for debug
+              window.debug_helper = helper;
+            }
 
             // if (post?.post_number === window.now_post_number) {
             //   if (document.querySelector(".d-toc-wrapper")) {
