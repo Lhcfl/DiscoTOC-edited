@@ -27,7 +27,9 @@ export default {
             // if (post?.post_number !== 1) {
             //   return;
             // }
-
+            
+            if (helper.getModel() == undefined) return;
+            
             const topicCategory = helper.getModel().topic.category_id;
             const topicTags = helper.getModel().topic.tags;
 
