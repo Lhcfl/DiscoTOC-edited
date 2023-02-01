@@ -71,11 +71,6 @@ export default {
             const downward = document.createElement("div");
             downward.setAttribute("id", `downward-post-${post?.post_number}`);
             el.appendChild(downward);
-            } catch (err) {
-              console.log(err);
-              // use for debug
-              window.debug_helper = helper;
-            }
 
             // for Dicourse DOCs
             if (window.location.href.indexOf("docs?topic=") !== -1) {
@@ -91,6 +86,12 @@ export default {
                   }
                 }, 300);
               }
+            }
+            
+            } catch (err) {
+              console.log(err);
+              // use for debug
+              window.debug_helper = helper;
             }
 
             // if (post?.post_number === window.now_post_number) {
