@@ -19,7 +19,7 @@ export default {
 
       let headings_of_id = {};
       window.now_post_number = 1;
-api.decorate
+
       api.decorateCookedElement(
         (el, helper) => {
           if (helper) {
@@ -28,13 +28,13 @@ api.decorate
             //   return;
             // }
             
-            if (helper.getModel() == undefined) return;
-            if (helper.getModel().topic == undefined) return;
+            if (post == undefined) return;
+            if (post.topic == undefined) return;
             
             try{
 
-            const topicCategory = helper.getModel().topic.category_id;
-            const topicTags = helper.getModel().topic.tags;
+            const topicCategory = post.topic.category_id;
+            const topicTags = post.topic.tags;
             
 
             const hasTOCmarkup = el?.querySelector(`[data-theme-toc="true"]`);
@@ -75,6 +75,22 @@ api.decorate
               console.log(err);
               // use for debug
               window.debug_helper = helper;
+            }
+
+            // for Dicourse DOCs
+            if (window.location.href.indexOf("docs?topic=") !== -1) {
+              if (document.querySelector(".d-toc-wrapper")) {
+                this.insertTOC(headings);
+              } else {
+                // try again if decoration happens while outlet is not rendered
+                // this is due to core resetting `canRender` for topic-navigation
+                // when transitioning between topics
+                later(() => {
+                  if (document.querySelector(".d-toc-wrapper")) {
+                    this.insertTOC(headings);
+                  }
+                }, 300);
+              }
             }
 
             // if (post?.post_number === window.now_post_number) {
@@ -132,6 +148,8 @@ api.decorate
         document.body.classList.remove("d-toc-timeline-visible");
         document.removeEventListener("click", this.clickTOC, false);
       });
+
+
     });
   },
 
