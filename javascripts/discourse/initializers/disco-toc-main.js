@@ -56,13 +56,9 @@ export default {
 
             headings_of_id[post.post_number] = headings;
 
-            // const indexMap = {};
-
             headings.forEach((h, index) => {
-              // suffix uses index for non-Latin languages
-              const slugified = encodeURI(h.textContent).replaceAll("%", "-");
-              // indexMap[slugified] = indexMap[slugified] ? indexMap[slugified] + 1 : 1;
-              const suffix = `${slugified}-${index}`;
+              // suffix uses index to prevent from equal titles
+              const suffix = `${slugify(h.textContent)}-${post?.post_number}-${index}`;
               const id =
                 h.getAttribute("id") || slugify(`toc-${h.nodeName}-${suffix}`);
 
