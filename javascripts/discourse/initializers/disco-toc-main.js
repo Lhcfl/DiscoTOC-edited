@@ -27,21 +27,21 @@ export default {
             // if (post?.post_number !== 1) {
             //   return;
             // }
-            
-            if (post == undefined) return;
-            if (post.topic == undefined) return;
-            
+
+            if (post === undefined) {return;}
+            if (post.topic === undefined) {return;}
+
             try{
 
             const topicCategory = post.topic.category_id;
             const topicTags = post.topic.tags;
-            
+
 
             const hasTOCmarkup = el?.querySelector(`[data-theme-toc="true"]`);
             const tocCategory = autoTocCategoryIds?.includes(topicCategory);
             const tocTag = topicTags?.some((tag) => autoTocTags?.includes(tag));
 
-            if (!hasTOCmarkup && !tocCategory && !tocTag && post?.post_number == window.now_post_number) {
+            if (!hasTOCmarkup && !tocCategory && !tocTag && post?.post_number === window.now_post_number) {
               document.body.classList.remove("d-toc-timeline-visible");
               return;
             }
@@ -56,9 +56,13 @@ export default {
 
             headings_of_id[post.post_number] = headings;
 
+            // const indexMap = {};
+
             headings.forEach((h, index) => {
               // suffix uses index for non-Latin languages
-              const suffix = /*slugify(h.textContent) ||*/ index + "-salt-" + Math.round(Math.random() * 1145141919);
+              const slugified = encodeURI(h.textContent).replaceAll("%", "-");
+              // indexMap[slugified] = indexMap[slugified] ? indexMap[slugified] + 1 : 1;
+              const suffix = `${slugified}-${index}`;
               const id =
                 h.getAttribute("id") || slugify(`toc-${h.nodeName}-${suffix}`);
 
@@ -87,9 +91,12 @@ export default {
                 }, 300);
               }
             }
-            
+
             } catch (err) {
-              console.log(err);
+              // eslint-disable-next-line no-console
+              console.log("DiscoTOC-Edited Occurred an bug:");
+              // eslint-disable-next-line no-console
+              console.error(err);
               // use for debug
               window.debug_helper = helper;
             }
@@ -123,26 +130,28 @@ export default {
         }
 
         window.now_post_number = args.post.post_number;
-        
-        if (args.post.cooked.indexOf('<div data-theme-toc="true">') !== -1 && headings_of_id[window.now_post_number] != undefined) {
+
+        if (args.post.cooked.indexOf('<div data-theme-toc="true">') !== -1 && headings_of_id[window.now_post_number] !== undefined) {
           document.body.classList.remove("d-toc-timeline-visible");
           document.body.classList.add("d-toc-timeline-visible");
           setTimeout(() => {
             this.insertTOC(headings_of_id[window.now_post_number]);
-          }, 500)
+          }, 500);
         } else {
           document.body.classList.remove("d-toc-timeline-visible");
         }
       });
 
       api.onAppEvent("docs-topic:current-post-scrolled", () => {
-        if (headings_of_id[window.now_post_number] != undefined)
-         this.updateTOCSidebar(headings_of_id[window.now_post_number]);
+        if (headings_of_id[window.now_post_number] !== undefined) {
+          this.updateTOCSidebar(headings_of_id[window.now_post_number]);
+        }
       });
 
-      api.onAppEvent("topic:current-post-scrolled", (args) => {
-        if (headings_of_id[window.now_post_number] != undefined)
+      api.onAppEvent("topic:current-post-scrolled", () => {
+        if (headings_of_id[window.now_post_number] !== undefined) {
           this.updateTOCSidebar(headings_of_id[window.now_post_number]);
+        }
       });
 
       api.cleanupStream(() => {
@@ -155,7 +164,7 @@ export default {
   },
 
   updateTOCSidebar(headings) {
-    if (headings == undefined) {return;}
+    if (headings === undefined) {return;}
     if (!document.querySelector(".d-toc-cooked")) {
       return;
     }
@@ -196,7 +205,7 @@ export default {
   },
 
   insertTOC(headings) {
-    if (headings == undefined) {
+    if (headings === undefined) {
       return;
     }
     const dToc = document.createElement("div");
@@ -285,7 +294,7 @@ export default {
   },
 
   buildTOC(headings) {
-    if (headings == undefined) return;
+    if (headings === undefined) { return; }
     const old_d = document.getElementById("d-toc");
     if (old_d != null) {
       old_d.parentNode.removeChild(old_d);
