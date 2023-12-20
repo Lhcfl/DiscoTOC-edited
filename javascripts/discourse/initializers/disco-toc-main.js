@@ -1,10 +1,13 @@
-import domUtils from "discourse-common/utils/dom-utils";
-import { headerOffset } from "discourse/lib/offset-calculator";
-import { iconHTML } from "discourse-common/lib/icon-library";
 import { later } from "@ember/runloop";
-import { slugify } from "discourse/lib/utilities";
+import { headerOffset } from "discourse/lib/offset-calculator";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { slugify } from "discourse/lib/utilities";
+import { iconHTML } from "discourse-common/lib/icon-library";
+import domUtils from "discourse-common/utils/dom-utils";
 import I18n from "I18n";
+
+let now_post_number = 1;
+let headings_of_id = {};
 
 export default {
   name: "disco-toc-main",
@@ -16,9 +19,6 @@ export default {
         .map((id) => parseInt(id, 10));
 
       const autoTocTags = settings.auto_TOC_tags.split("|");
-
-      let headings_of_id = {};
-      window.now_post_number = 1;
 
       api.decorateCookedElement(
         (el, helper) => {
@@ -41,7 +41,7 @@ export default {
             const tocCategory = autoTocCategoryIds?.includes(topicCategory);
             const tocTag = topicTags?.some((tag) => autoTocTags?.includes(tag));
 
-            if (!hasTOCmarkup && !tocCategory && !tocTag && post?.post_number === window.now_post_number) {
+            if (!hasTOCmarkup && !tocCategory && !tocTag && post?.post_number === now_post_number) {
               document.body.classList.remove("d-toc-timeline-visible");
               return;
             }
@@ -97,7 +97,7 @@ export default {
               window.debug_helper = helper;
             }
 
-            // if (post?.post_number === window.now_post_number) {
+            // if (post?.post_number === now_post_number) {
             //   if (document.querySelector(".d-toc-wrapper")) {
             //     this.insertTOC(headings);
             //   } else {
@@ -125,13 +125,13 @@ export default {
           return;
         }
 
-        window.now_post_number = args.post.post_number;
+        now_post_number = args.post.post_number;
 
-        if (args.post.cooked.indexOf('<div data-theme-toc="true">') !== -1 && headings_of_id[window.now_post_number] !== undefined) {
+        if (args.post.cooked.indexOf('<div data-theme-toc="true">') !== -1 && headings_of_id[now_post_number] !== undefined) {
           document.body.classList.remove("d-toc-timeline-visible");
           document.body.classList.add("d-toc-timeline-visible");
           setTimeout(() => {
-            this.insertTOC(headings_of_id[window.now_post_number]);
+            this.insertTOC(headings_of_id[now_post_number]);
           }, 500);
         } else {
           document.body.classList.remove("d-toc-timeline-visible");
@@ -139,14 +139,14 @@ export default {
       });
 
       api.onAppEvent("docs-topic:current-post-scrolled", () => {
-        if (headings_of_id[window.now_post_number] !== undefined) {
-          this.updateTOCSidebar(headings_of_id[window.now_post_number]);
+        if (headings_of_id[now_post_number] !== undefined) {
+          this.updateTOCSidebar(headings_of_id[now_post_number]);
         }
       });
 
       api.onAppEvent("topic:current-post-scrolled", () => {
-        if (headings_of_id[window.now_post_number] !== undefined) {
-          this.updateTOCSidebar(headings_of_id[window.now_post_number]);
+        if (headings_of_id[now_post_number] !== undefined) {
+          this.updateTOCSidebar(headings_of_id[now_post_number]);
         }
       });
 
@@ -257,7 +257,7 @@ export default {
       // link to first post bottom
       if (e.target.closest("a").classList.contains("scroll-to-bottom")) {
         const rect = document
-          .querySelector(`#downward-post-${window.now_post_number}`)
+          .querySelector(`#downward-post-${now_post_number}`)
           .getBoundingClientRect();
 
         if (rect) {

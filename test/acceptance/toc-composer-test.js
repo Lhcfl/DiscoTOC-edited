@@ -1,11 +1,12 @@
+import { click, visit } from "@ember/test-helpers";
+import { test } from "qunit";
 import {
   acceptance,
   exists,
   query,
 } from "discourse/tests/helpers/qunit-helpers";
-import { click, visit } from "@ember/test-helpers";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
-import { test } from "qunit";
+import I18n from "discourse-i18n";
 
 acceptance("DiscoTOC - Composer", function (needs) {
   needs.user();
@@ -19,7 +20,9 @@ acceptance("DiscoTOC - Composer", function (needs) {
     await click("#create-topic");
     const toolbarPopupMenu = selectKit(".toolbar-popup-menu-options");
     await toolbarPopupMenu.expand();
-    await toolbarPopupMenu.selectRowByValue("insertDtoc");
+    await toolbarPopupMenu.selectRowByName(
+      I18n.t(themePrefix("insert_table_of_contents"))
+    );
 
     assert.ok(query(".d-editor-input").value.includes('data-theme-toc="true"'));
   });
@@ -33,7 +36,9 @@ acceptance("DiscoTOC - Composer", function (needs) {
 
     const toolbarPopupMenu = selectKit(".toolbar-popup-menu-options");
     await toolbarPopupMenu.expand();
-    await toolbarPopupMenu.selectRowByValue("insertDtoc");
+    await toolbarPopupMenu.selectRowByName(
+      I18n.t(themePrefix("insert_table_of_contents"))
+    );
 
     assert.ok(query(".d-editor-input").value.includes('data-theme-toc="true"'));
   });

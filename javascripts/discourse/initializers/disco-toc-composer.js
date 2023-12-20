@@ -1,5 +1,5 @@
-import I18n from "I18n";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import I18n from "I18n";
 
 export default {
   name: "disco-toc-composer",
@@ -19,17 +19,18 @@ export default {
         }
         I18n.translations[I18n.currentLocale()].js.composer.contains_dtoc = " ";
 
-        api.modifyClass("controller:composer", {
-          pluginId: "DiscoTOC",
-
-          actions: {
-            insertDtoc() {
-              this.get("toolbarEvent").applySurround(
-                `<div data-theme-toc="true">`,
-                `</div>`,
-                "contains_dtoc"
-              );
-            },
+        api.addComposerToolbarPopupMenuOption({
+          action: (toolbarEvent) => {
+            toolbarEvent.applySurround(
+              `<div data-theme-toc="true">`,
+              `</div>`,
+              "contains_dtoc"
+            );
+          },
+          icon: "align-left",
+          label: themePrefix("insert_table_of_contents"),
+          condition: (composer) => {
+            return composer.model.topicFirstPost;
           },
         });
 
