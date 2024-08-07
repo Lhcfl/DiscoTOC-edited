@@ -1,5 +1,5 @@
-# DiscoTOC
+# DiscoTOC-Edited
 
-A Discourse theme component that generates a table of contents for topics with one click
+该主题组件曾经做过的所有更改现在已经在上游被合并。请考虑使用官方的主题组件 https://github.com/discourse/DiscoTOC
 
-https://meta.discourse.org/t/discotoc-automatic-table-of-contents/111143
+All changes that have been made to this theme component have now been merged upstream. Please consider using the official theme component https://github.com/discourse/DiscoTOC
